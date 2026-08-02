@@ -21,7 +21,7 @@ const eslintConfig = defineConfig([
   // and is simply the wrong rule here; obeying it would mean reallocating
   // scene objects 60 times a second.
   {
-    files: ["src/scene/**/*.{ts,tsx}", "src/systems/**/*.{ts,tsx}"],
+    files: ["src/three/**/*.{ts,tsx}", "src/systems/**/*.{ts,tsx}"],
     rules: {
       "react-hooks/immutability": "off",
     },

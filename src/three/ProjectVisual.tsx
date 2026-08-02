@@ -188,9 +188,10 @@ export function ProjectVisual({
 }
 
 /** The hero object, split out because it uses a different camera framing. */
-const IrisCore = dynamic(() => import("./objects/IrisCore").then((m) => m.IrisCore), {
-  ssr: false,
-});
+const ParticlePortrait = dynamic(
+  () => import("./objects/ParticlePortrait").then((m) => m.ParticlePortrait),
+  { ssr: false },
+);
 
 export function HeroVisual({ className = "" }: { className?: string }) {
   return (
@@ -201,16 +202,31 @@ export function HeroVisual({ className = "" }: { className?: string }) {
       camera={{ position: [0, 0, 4.6], fov: 42 }}
       fallback={
         <div className="flex h-full w-full items-center justify-center">
-          <svg viewBox="0 0 100 100" className="h-2/3 w-2/3" aria-hidden="true">
-            <circle cx="50" cy="50" r="34" fill="#0d1014" stroke="#2b323b" strokeWidth="1" />
-            <circle cx="50" cy="50" r="13" fill="none" stroke="#c6ff4a" strokeWidth="3" />
-            <circle cx="50" cy="50" r="6" fill="#05070a" />
-            <ellipse cx="50" cy="50" rx="34" ry="12" fill="none" stroke="#c6ff4a" strokeWidth="0.6" opacity="0.35" />
+          {/* A dotted head silhouette — the same idea at rest, for anyone
+              without WebGL or with reduced motion enabled. */}
+          <svg viewBox="0 0 100 120" className="h-full w-auto" aria-hidden="true">
+            {Array.from({ length: 260 }).map((_, i) => {
+              // Deterministic scatter inside a head-shaped ellipse.
+              const a = (i * 2.399) % (Math.PI * 2);
+              const r = Math.sqrt(((i * 37) % 100) / 100);
+              const x = 50 + Math.cos(a) * r * 27;
+              const y = 54 + Math.sin(a) * r * 36;
+              return (
+                <circle
+                  key={i}
+                  cx={x}
+                  cy={y}
+                  r={0.8}
+                  fill="#c6ff4a"
+                  opacity={0.15 + (1 - r) * 0.45}
+                />
+              );
+            })}
           </svg>
         </div>
       }
     >
-      <IrisCore />
+      <ParticlePortrait />
     </Object3DFrame>
   );
 }
