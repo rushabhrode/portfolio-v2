@@ -165,16 +165,18 @@ export const projects: Project[] = [
     tagline:
       "A medallion pipeline that answers seven business questions — and refuses to answer where the data can't support one.",
     year: "2026",
-    role: "Solution engineering — pipeline, serving layer, API, and UI",
+    role: "Citi coding workshop — solution engineering",
     // The brief and the repository scaffold came from the workshop organiser.
-    // Saying so costs nothing and makes the rest of the claim credible.
+    // Saying so costs nothing and makes the rest of the claim credible — an
+    // interviewer who opens the repo sees both authors immediately, and it is
+    // much better that he said it first.
     attribution:
-      "Built against a provided coding-workshop brief and repository scaffold. The pipeline, serving layer, API and interface are my work — 43 commits.",
+      "Built for Citi's coding workshop, against a provided brief and repository scaffold. The pipeline, serving layer, API and interface are my work — 43 commits.",
     featured: true,
     lead: true,
     core: "pipeline",
     problem:
-      "A company's team data sat in seven feeds across six systems, and nobody could answer basic questions about how the organisation was actually structured: who is on each team, where teams sit, which leaders are not co-located, which teams run above a 20% non-direct-staff ratio. The naive answers are easy to produce and quietly wrong — 28,595 email addresses map to more than one person, so a plain join inflates 244k memberships to roughly 650k rows while every downstream figure still looks plausible.",
+      "The brief's scenario company, ACME Inc., had team data spread across seven feeds and six systems, and nobody could answer basic questions about how the organisation was actually structured: who is on each team, where teams sit, which leaders are not co-located, which teams run above a 20% non-direct-staff ratio. The naive answers are easy to produce and quietly wrong — 28,595 email addresses map to more than one person, so a plain join inflates 244k memberships to roughly 650k rows while every downstream figure still looks plausible.",
     approach:
       "A Bronze/Silver/Gold pipeline in PySpark. Bronze is a faithful string-typed copy that records the source of every row; Silver types, deduplicates and identity-resolves, asserting that Silver plus quarantine equals Bronze per entity and halting the run when it doesn't; Gold produces 15 business marts mirrored into Aurora PostgreSQL with indexes for serving. An identity bridge collapses each ambiguous email to one party before any fact join, and every row carries its resolution status so a deterministic pick can never be mistaken for a fact. A Lambda-backed read-only API serves the Gold layer to a React interface, and a Jupyter notebook runs the same queries against live cloud data.",
     result:
