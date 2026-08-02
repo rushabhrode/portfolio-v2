@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { person } from "@/content/portfolio.data";
+import { Backdrop } from "./Backdrop";
 
 /**
  * Persistent chrome.
@@ -101,6 +102,9 @@ export function SiteFooter() {
 export function ReadingLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      {/* Same depth layers as the home page — without them the reading routes
+          look like a different site. */}
+      <Backdrop />
       <SiteHeader />
       <main className="mx-auto max-w-3xl px-5 py-14 sm:px-6">{children}</main>
       <SiteFooter />
