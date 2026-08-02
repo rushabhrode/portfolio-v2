@@ -17,7 +17,7 @@ import { Reveal } from "./Reveal";
 import { Rise } from "./Rise";
 import { Counter } from "./Counter";
 import { Marquee } from "./Marquee";
-import { HeroVisual, ProjectVisual } from "@/three/ProjectVisual";
+import { ProjectVisual } from "@/three/ProjectVisual";
 
 export function StaticPortfolio() {
   return (
@@ -36,7 +36,7 @@ export function StaticPortfolio() {
 
 function Hero() {
   return (
-    <section className="grid min-h-[88vh] items-center gap-10 py-12 md:grid-cols-[1fr_480px] md:gap-12">
+    <section className="flex min-h-[82vh] flex-col justify-center py-12">
       <div>
         <Rise>
           <p className="inline-flex items-center gap-2.5 font-mono text-[11px] tracking-[0.2em] text-accent uppercase">
@@ -65,7 +65,10 @@ function Hero() {
         </Rise>
 
         <Rise delay={240}>
-          <dl className="mt-9 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4">
+          {/* Capped rather than full-bleed: with no visual beside it, an
+              unconstrained stat row stretches to the container width and the
+              figures stop reading as a group. */}
+          <dl className="mt-9 grid max-w-3xl grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4">
             <Stat label="model accuracy">
               <Counter value={95} suffix="%" />
             </Stat>
@@ -98,17 +101,6 @@ function Hero() {
           </div>
         </Rise>
       </div>
-
-      {/* The eye. A soft glow sits behind it so it reads as lit rather than
-          pasted onto the page. */}
-      <Rise delay={200} className="relative mx-auto w-full max-w-[480px] md:mx-0">
-        <div
-          aria-hidden
-          className="absolute inset-6 rounded-full opacity-70 blur-3xl"
-          style={{ background: "radial-gradient(circle, #c6ff4a2e, transparent 70%)" }}
-        />
-        <HeroVisual className="relative aspect-square w-full" />
-      </Rise>
     </section>
   );
 }
