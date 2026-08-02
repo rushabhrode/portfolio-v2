@@ -1,12 +1,12 @@
 /**
- * FOVEA — single source of truth.
+ * Single source of truth.
  *
- * Everything on this site reads from this file: the 3D world, the DOM panels, the
- * static routes, the sitemap, and the JSON-LD. Content can therefore never drift
- * between the canvas and the crawlable pages.
+ * Everything on this site reads from this file: the home page, the static
+ * project/paper/blog routes, the sitemap, the JSON-LD, and the generated social
+ * cards. Those can therefore never disagree with each other.
  *
- * All facts here are taken from Rushabh_Rode_Resume.pdf. Where the previous site
- * disagreed with the résumé, the résumé wins.
+ * All facts here are taken from the résumé. Where the previous site disagreed
+ * with it, the résumé wins.
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -29,7 +29,14 @@ export interface Metric {
 }
 
 /** Which procedural form represents this project in the 3D world. */
-export type CoreKind = "eye" | "towers" | "review" | "lattice" | "flow" | "monolith";
+export type CoreKind =
+  | "eye"
+  | "towers"
+  | "review"
+  | "lattice"
+  | "flow"
+  | "pipeline"
+  | "monolith";
 
 export interface Project {
   slug: string;
@@ -39,7 +46,11 @@ export interface Project {
   year: string;
   role: string;
   featured: boolean;
+  /** Rendered full-width above the featured grid. At most one. */
+  lead?: boolean;
   core: CoreKind;
+  /** Shown verbatim when the work was not started from a blank repository. */
+  attribution?: string;
   problem: string;
   approach: string;
   result: string;
@@ -59,7 +70,7 @@ export interface Paper {
   contribution: string;
   keywords: string[];
   links: Link[];
-  /** Drives obelisk height in The Archive. */
+  /** Relative prominence, for ordering. */
   weight: number;
 }
 
@@ -83,7 +94,7 @@ export interface LeadershipEntry {
   title: string;
   org: string;
   detail: string;
-  /** Drives the size of this node in the Assembly swarm. */
+  /** Relative prominence, for ordering. */
   scale: number;
 }
 
@@ -102,30 +113,6 @@ export type Block =
   | { t: "h"; text: string }
   | { t: "ul"; items: string[] }
   | { t: "quote"; text: string };
-
-/**
- * A place in the basin.
- *
- * `position` is where the structure stands AND the point the camera looks at.
- * `camera` is where the camera sits when visiting.
- *
- * Calibration is the exception: it is the spawn point at the centre of the
- * basin and has no structure of its own, so its `position` is purely a look
- * target out across the basin.
- */
-export interface Place {
-  id: string;
-  /** Instrument Serif. One or two words, never more. */
-  name: string;
-  /** JetBrains Mono, lowercase. The plain-language translation. */
-  subtitle: string;
-  /** Keyboard shortcut, 1–8. */
-  key: number;
-  position: [number, number, number];
-  /** Where the camera sits when visiting. */
-  camera: [number, number, number];
-  blurb: string;
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Identity
@@ -168,100 +155,53 @@ export const education = {
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// The eight places
-//
-// Basin radius ~30. Elevation encodes career hierarchy: Publications highest and
-// brightest, Contact sunken so the overhead iris frames it.
-//
-// The radius was originally ~48, which looked right on paper and failed in
-// practice: from any viewpoint that framed the whole ring, the structures were
-// far enough away that fog and inverse-square falloff left them unreadable, and
-// the labels fell outside the frustum. Pulling the ring in is what makes "all
-// eight places visible at once" actually true.
-// ─────────────────────────────────────────────────────────────────────────────
-
-export const places: Place[] = [
-  {
-    id: "calibration",
-    name: "Calibration",
-    subtitle: "about",
-    key: 1,
-    // An establishing shot: high enough to see the whole instrument, shallow
-    // enough that the place labels stay inside the frustum.
-    position: [0, 5, -8],
-    camera: [0, 21, 44],
-    blurb: person.statement,
-  },
-  {
-    id: "foundry",
-    name: "The Foundry",
-    subtitle: "projects",
-    key: 2,
-    position: [21, 6, -21],
-    camera: [15, 9.5, -9],
-    blurb: "Four things I built, and what each one had to solve.",
-  },
-  {
-    id: "archive",
-    name: "The Archive",
-    subtitle: "publications",
-    key: 3,
-    position: [0, 13, -30],
-    camera: [0, 16, -16],
-    blurb: "Peer-reviewed work. IEEE OTCON-2025.",
-  },
-  {
-    id: "spire",
-    name: "The Spire",
-    subtitle: "experience",
-    key: 4,
-    position: [-21, 4, -21],
-    camera: [-15, 8, -9],
-    blurb: "Where I've worked and what I shipped there.",
-  },
-  {
-    id: "lattice",
-    name: "The Lattice",
-    subtitle: "certificates",
-    key: 5,
-    position: [30, 2, 0],
-    camera: [19, 5.5, 5],
-    blurb: "Certifications and the coursework behind them.",
-  },
-  {
-    id: "assembly",
-    name: "The Assembly",
-    subtitle: "leadership",
-    key: 6,
-    position: [-30, 2, 0],
-    camera: [-19, 5.5, 5],
-    blurb: "Getting two hundred independent people to move in one direction.",
-  },
-  {
-    id: "signal",
-    name: "Signal Tower",
-    subtitle: "writing",
-    key: 7,
-    position: [-19, 1, 20],
-    camera: [-12, 4.5, 11],
-    blurb: "Notes on building things that stay maintainable.",
-  },
-  {
-    id: "aperture",
-    name: "The Aperture",
-    subtitle: "contact",
-    key: 8,
-    position: [18, -3, 20],
-    camera: [11, 2, 11],
-    blurb: "Résumé, inbox, and the way out.",
-  },
-];
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Projects — the four on the résumé lead; the rest are real but secondary.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const projects: Project[] = [
+  {
+    slug: "teams-data-platform",
+    title: "Teams Data Platform",
+    tagline:
+      "A medallion pipeline that answers seven business questions — and refuses to answer where the data can't support one.",
+    year: "2026",
+    role: "Solution engineering — pipeline, serving layer, API, and UI",
+    // The brief and the repository scaffold came from the workshop organiser.
+    // Saying so costs nothing and makes the rest of the claim credible.
+    attribution:
+      "Built against a provided coding-workshop brief and repository scaffold. The pipeline, serving layer, API and interface are my work — 43 commits.",
+    featured: true,
+    lead: true,
+    core: "pipeline",
+    problem:
+      "A company's team data sat in seven feeds across six systems, and nobody could answer basic questions about how the organisation was actually structured: who is on each team, where teams sit, which leaders are not co-located, which teams run above a 20% non-direct-staff ratio. The naive answers are easy to produce and quietly wrong — 28,595 email addresses map to more than one person, so a plain join inflates 244k memberships to roughly 650k rows while every downstream figure still looks plausible.",
+    approach:
+      "A Bronze/Silver/Gold pipeline in PySpark. Bronze is a faithful string-typed copy that records the source of every row; Silver types, deduplicates and identity-resolves, asserting that Silver plus quarantine equals Bronze per entity and halting the run when it doesn't; Gold produces 15 business marts mirrored into Aurora PostgreSQL with indexes for serving. An identity bridge collapses each ambiguous email to one party before any fact join, and every row carries its resolution status so a deterministic pick can never be mistaken for a fact. A Lambda-backed read-only API serves the Gold layer to a React interface, and a Jupyter notebook runs the same queries against live cloud data.",
+    result:
+      "The finding that matters is a negative one. Co-location looked like '20,240 teams are not co-located' until two problems surfaced: one location code maps to two different cities, and 95% of teams contain an ambiguous identity. Only 200 of 25,000 teams can honestly be decided, so the platform publishes both readings — the observed number for continuity, the confirmed one for decisions — instead of picking whichever looked better. Verified by 390 tests with five coverage gates, reconciliation invariants that raise rather than log, and an independent recomputation of every headline figure in pandas by a different route.",
+    metrics: [
+      { label: "Source rows", value: "703,448 · 7 feeds" },
+      { label: "Tests", value: "390 · 5 gates" },
+      { label: "Scale", value: "10× rows → 1.9× time" },
+    ],
+    stack: [
+      "PySpark",
+      "Aurora PostgreSQL",
+      "S3 Parquet",
+      "AWS EKS",
+      "AWS Lambda",
+      "Terraform",
+      "React",
+      "Jupyter",
+    ],
+    links: [
+      {
+        label: "Code",
+        href: "https://github.com/rushabhrode/teams-data-platform",
+        kind: "code",
+      },
+    ],
+  },
   {
     slug: "autism-eye-tracking",
     title: "Autism Detection via Eye Tracking",
@@ -723,4 +663,8 @@ export const socials: Link[] = [
 export const getProject = (slug: string) => projects.find((p) => p.slug === slug);
 export const getPaper = (slug: string) => papers.find((p) => p.slug === slug);
 export const getPost = (slug: string) => posts.find((p) => p.slug === slug);
-export const getPlace = (id: string) => places.find((p) => p.id === id);
+
+/** The one project rendered full-width above the grid, if any. */
+export const leadProject = projects.find((p) => p.lead);
+/** Featured projects excluding the lead, so the grid stays even. */
+export const gridProjects = projects.filter((p) => p.featured && !p.lead);

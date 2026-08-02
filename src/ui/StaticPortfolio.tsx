@@ -3,7 +3,8 @@ import {
   person,
   education,
   projects,
-  featuredProjects,
+  leadProject,
+  gridProjects,
   papers,
   roles,
   skills,
@@ -146,8 +147,90 @@ function Work() {
         <SectionHead n="01" title="work" id="work" />
       </Reveal>
 
-      <div className="mt-7 grid gap-px bg-line sm:grid-cols-2">
-        {featuredProjects.map((project, i) => (
+      {/* The strongest piece of engineering gets the most space rather than an
+          equal share of a grid. */}
+      {leadProject && (
+        <Reveal as="article" delay={40}>
+          <div className="card mt-7 grid gap-6 bg-panel p-5 sm:p-7 md:grid-cols-[1fr_260px] md:gap-10">
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="font-mono text-[11px] text-accent">[00]</span>
+                <span className="rounded-sm border border-accent/40 px-2 py-0.5 font-mono text-[10px] tracking-wider text-accent uppercase">
+                  featured
+                </span>
+                <span className="font-mono text-[11px] text-dim">
+                  {leadProject.year}
+                </span>
+              </div>
+
+              <h3 className="mt-3 text-2xl font-medium sm:text-3xl">
+                <Link
+                  href={`/projects/${leadProject.slug}`}
+                  className="transition-colors hover:text-accent"
+                >
+                  {leadProject.title}
+                </Link>
+              </h3>
+
+              <p className="mt-3 max-w-2xl leading-relaxed text-text/70">
+                {leadProject.tagline}
+              </p>
+
+              <dl className="mt-6 grid gap-px border border-line bg-line sm:grid-cols-3">
+                {leadProject.metrics.map((m) => (
+                  <div key={m.label} className="bg-panel px-4 py-3">
+                    <dt className="font-mono text-[10px] tracking-wider text-dim uppercase">
+                      {m.label}
+                    </dt>
+                    <dd className="mt-1 font-mono text-sm text-accent">{m.value}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              <p className="mt-5 font-mono text-[10px] leading-relaxed text-dim">
+                {leadProject.stack.join(" · ")}
+              </p>
+
+              {leadProject.attribution && (
+                <p className="mt-4 border-l border-line pl-3 text-[13px] leading-relaxed text-dim">
+                  {leadProject.attribution}
+                </p>
+              )}
+
+              <div className="mt-5 flex flex-wrap gap-4 font-mono text-[11px] tracking-wider uppercase">
+                <Link
+                  href={`/projects/${leadProject.slug}`}
+                  className="group text-accent"
+                >
+                  case study
+                  <span className="ml-1 inline-block transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
+                </Link>
+                {leadProject.links.map((l) => (
+                  <a
+                    key={l.label}
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-dim transition-colors hover:text-text"
+                  >
+                    {l.label.toLowerCase()} ↗
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <ProjectVisual
+              slug={leadProject.slug}
+              className="mx-auto aspect-square w-full max-w-[260px] md:mx-0"
+            />
+          </div>
+        </Reveal>
+      )}
+
+      <div className="mt-px grid gap-px bg-line sm:grid-cols-2">
+        {gridProjects.map((project, i) => (
           <Reveal as="article" key={project.slug} delay={i * 70} className="flex">
             <div className="card flex w-full flex-col bg-panel p-5 sm:p-6">
               <div className="flex items-start justify-between gap-4">

@@ -52,6 +52,14 @@ export default async function ProjectPage({
             <p className="mt-3 max-w-xl leading-relaxed text-text/70">
               {project.tagline}
             </p>
+            {/* Stated up front rather than buried. Where work started from
+                someone else's scaffold, saying so is what makes the rest of
+                the page credible. */}
+            {project.attribution && (
+              <p className="mt-4 max-w-xl border-l border-line pl-3 text-[13px] leading-relaxed text-dim">
+                {project.attribution}
+              </p>
+            )}
           </div>
           <ProjectVisual slug={project.slug} className="h-24 w-24 sm:h-28 sm:w-28" />
         </header>

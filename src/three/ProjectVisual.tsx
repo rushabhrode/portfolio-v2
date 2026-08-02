@@ -23,10 +23,15 @@ const WaferLattice = dynamic(
   () => import("./objects/WaferLattice").then((m) => m.WaferLattice),
   { ssr: false },
 );
+const MedallionPipeline = dynamic(
+  () => import("./objects/MedallionPipeline").then((m) => m.MedallionPipeline),
+  { ssr: false },
+);
 
-type Kind = "scanpath" | "diff" | "towers" | "wafers";
+type Kind = "scanpath" | "diff" | "towers" | "wafers" | "pipeline";
 
 const BY_SLUG: Record<string, Kind> = {
+  "teams-data-platform": "pipeline",
   "autism-eye-tracking": "scanpath",
   "code-review-assistant": "diff",
   "two-tower-rag": "towers",
@@ -100,6 +105,37 @@ function Fallback({ kind }: { kind: Kind }) {
         </>
       )}
 
+      {kind === "pipeline" && (
+        <>
+          {[0, 1, 2].map((i) => (
+            <rect
+              key={i}
+              x={26 + i * 6}
+              y={24 + i * 20}
+              width={48 - i * 12}
+              height="10"
+              fill="none"
+              stroke={i === 2 ? stroke : dim}
+              strokeWidth="1.2"
+              opacity={i === 2 ? 0.9 : 0.7}
+            />
+          ))}
+          {[38, 50, 62].map((x, i) => (
+            <line
+              key={i}
+              x1={x}
+              y1="18"
+              x2={x}
+              y2="78"
+              stroke={stroke}
+              strokeWidth="0.7"
+              opacity="0.35"
+            />
+          ))}
+          <circle cx="50" cy="70" r="3" fill={stroke} />
+        </>
+      )}
+
       {kind === "wafers" && (
         <>
           {[0, 1, 2, 3].map((i) => (
@@ -142,6 +178,7 @@ export function ProjectVisual({
       }
       camera={{ position: [0, 0, 4.2], fov: 42 }}
     >
+      {kind === "pipeline" && <MedallionPipeline />}
       {kind === "scanpath" && <Scanpath />}
       {kind === "diff" && <DiffStream />}
       {kind === "towers" && <TwinTowers />}
