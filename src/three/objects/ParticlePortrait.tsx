@@ -28,8 +28,8 @@ import { GRID_W, GRID_H, PACKED, POINT_COUNT } from "../portraitData";
  * so the object costs essentially nothing to run.
  */
 
-/** World height of the portrait. Sized to sit comfortably in the hero canvas. */
-const HEIGHT = 3.25;
+/** World height of the portrait. Sized to nearly fill the hero canvas. */
+const HEIGHT = 3.45;
 const WIDTH = (HEIGHT * GRID_W) / GRID_H;
 
 function decode(): Uint8Array {
@@ -127,14 +127,27 @@ export function ParticlePortrait() {
     const lums = new Float32Array(POINT_COUNT);
     const seeds = new Float32Array(POINT_COUNT);
 
+    // Points extracted from a pixel grid land on exact grid coordinates, which
+    // is visible as a lattice and, at some zoom levels, as moiré. Scattering
+    // each point within its own cell removes the pattern without moving any
+    // point far enough to blur a feature.
+    const cellW = WIDTH / GRID_W;
+    const cellH = HEIGHT / GRID_H;
+    const jitter = (n: number) => {
+      const x = Math.sin(n * 127.1) * 43758.5453;
+      return x - Math.floor(x) - 0.5;
+    };
+
     for (let i = 0; i < POINT_COUNT; i++) {
       const gx = bytes[i * 3];
       const gy = bytes[i * 3 + 1];
       const lum = bytes[i * 3 + 2] / 255;
 
-      positions[i * 3] = (gx / GRID_W - 0.5) * WIDTH;
+      positions[i * 3] =
+        (gx / GRID_W - 0.5) * WIDTH + jitter(i) * cellW * 0.9;
       // Image rows run top-to-bottom; world Y runs bottom-to-top.
-      positions[i * 3 + 1] = -(gy / GRID_H - 0.5) * HEIGHT;
+      positions[i * 3 + 1] =
+        -(gy / GRID_H - 0.5) * HEIGHT + jitter(i + 7919) * cellH * 0.9;
       // Darker points sit slightly forward, giving the cloud real depth.
       positions[i * 3 + 2] = (1 - lum) * 0.34 - 0.17;
 
@@ -161,7 +174,10 @@ export function ParticlePortrait() {
           uCursor: { value: new Vector2(0, -99) },
           uActive: { value: 0 },
           uTime: { value: 0 },
-          uSize: { value: 0.019 },
+          // Smaller than it looks like it should be: the grid is now dense
+          // enough that larger dots merge into flat shapes and the detail the
+          // extra points bought is lost again.
+          uSize: { value: 0.0145 },
           uAccent: { value: new Color("#c6ff4a") },
           uBone: { value: new Color("#dfe4ea") },
         },

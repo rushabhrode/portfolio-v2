@@ -16,14 +16,21 @@ import { writeFileSync } from "node:fs";
 
 const SOURCE = process.argv[2] ?? "Passport.jpg";
 
-/** Face box on the 777x960 source: hair crown to just below the chin. */
-const FACE_BOX = { left: 222, top: 78, width: 344, height: 474 };
+/**
+ * Face box on the 777x960 source. Tight: hair crown to just under the chin,
+ * with the neck and collar excluded so the face fills the frame rather than
+ * sharing it with a suit.
+ */
+const FACE_BOX = { left: 240, top: 92, width: 312, height: 424 };
 
-/** Sampling grid. Width drives the dot count; the eye reads ~130 as a face. */
-const GRID_W = 132;
+/**
+ * Sampling grid. This is the real limit on how clear the face reads — at 132
+ * an eye is about three dots across, which is not enough to be an eye.
+ */
+const GRID_W = 200;
 
 /** Never emit more than this many points. */
-const MAX_POINTS = 9000;
+const MAX_POINTS = 18000;
 
 /** How far a pixel must sit from the backdrop tone to count as subject. */
 const BG_TOLERANCE = 14;
@@ -62,6 +69,36 @@ function rand(i) {
 const cx = W / 2;
 const cy = H / 2;
 
+/**
+ * Contrast curve.
+ *
+ * A passport photograph is deliberately flat — even lighting, no shadows — so
+ * the raw tonal range of a face is narrow and the features barely separate from
+ * the skin. Stretching between the 4th and 96th percentiles of the subject
+ * (ignoring outliers) and then applying an S-curve pulls the eyes, brows,
+ * glasses and mouth away from the cheeks, which is what makes it read as a
+ * face rather than a smudge.
+ */
+const subjectLums = [];
+for (let y = 0; y < H; y++) {
+  for (let x = 0; x < W; x++) {
+    const nx = (x - cx) / (W * 0.5);
+    const ny = (y - cy) / (H * 0.5);
+    if (Math.hypot(nx, ny * 0.92) > 1.02) continue;
+    subjectLums.push(lum(x, y));
+  }
+}
+subjectLums.sort((a, b) => a - b);
+const lo = subjectLums[Math.floor(subjectLums.length * 0.04)];
+const hi = subjectLums[Math.floor(subjectLums.length * 0.96)];
+
+function contrast(v) {
+  const t = Math.min(Math.max((v - lo) / Math.max(hi - lo, 1), 0), 1);
+  // Smoothstep: gentle at the extremes, steep through the midtones where the
+  // facial features actually live.
+  return t * t * (3 - 2 * t);
+}
+
 const points = [];
 let index = 0;
 
@@ -83,14 +120,17 @@ for (let y = 0; y < H; y++) {
     const isSubject = r < 0.72 || Math.abs(v - background) > BG_TOLERANCE;
     if (!isSubject) continue;
 
+    const graded = contrast(v);
+
     // Denser where the image is dark — hair, glasses, eyes, the jawline. Even
     // sampling wastes points on flat cheeks and loses the features that carry
-    // the likeness.
-    const darkness = 1 - v / 255;
-    const keep = 0.22 + darkness * 0.95;
+    // the likeness. Graded rather than raw, so the density follows the same
+    // curve the shader shades by.
+    const darkness = 1 - graded;
+    const keep = 0.3 + darkness * 0.9;
     if (rand(index) > keep) continue;
 
-    points.push([x, y, v]);
+    points.push([x, y, Math.round(graded * 255)]);
   }
 }
 

@@ -36,7 +36,7 @@ export function StaticPortfolio() {
 
 function Hero() {
   return (
-    <section className="grid min-h-[88vh] items-center gap-10 py-12 md:grid-cols-[1fr_420px] md:gap-14">
+    <section className="grid min-h-[88vh] items-center gap-10 py-12 md:grid-cols-[1fr_480px] md:gap-12">
       <div>
         <Rise>
           <p className="inline-flex items-center gap-2.5 font-mono text-[11px] tracking-[0.2em] text-accent uppercase">
@@ -101,7 +101,7 @@ function Hero() {
 
       {/* The eye. A soft glow sits behind it so it reads as lit rather than
           pasted onto the page. */}
-      <Rise delay={200} className="relative mx-auto w-full max-w-[420px] md:mx-0">
+      <Rise delay={200} className="relative mx-auto w-full max-w-[480px] md:mx-0">
         <div
           aria-hidden
           className="absolute inset-6 rounded-full opacity-70 blur-3xl"
