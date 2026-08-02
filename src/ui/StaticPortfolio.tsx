@@ -40,7 +40,7 @@ function Hero() {
         <Rise>
           <p className="inline-flex items-center gap-2.5 font-mono text-[11px] tracking-[0.2em] text-accent uppercase">
             <span aria-hidden className="pulse relative inline-block h-1.5 w-1.5 rounded-full bg-accent" />
-            open to work · graduating june 2026
+            open to work · available immediately
           </p>
         </Rise>
 
@@ -72,7 +72,7 @@ function Hero() {
             <Stat label="cgpa">
               <Counter value={8.69} decimals={2} />
             </Stat>
-            <Stat label="graduating">2026</Stat>
+            <Stat label="b.tech complete">2026</Stat>
           </dl>
         </Rise>
 
@@ -453,7 +453,7 @@ function Contact() {
           />
           <p className="font-mono text-[11px] tracking-[0.2em] text-accent uppercase">
             {"// "}
-            available june 2026
+            available immediately
           </p>
           <h2
             className="relative mt-4 font-semibold tracking-tight"

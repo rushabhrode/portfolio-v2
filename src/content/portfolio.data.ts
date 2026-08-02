@@ -141,7 +141,7 @@ export const person = {
     "I build LLM-powered applications, retrieval pipelines, and the backends underneath them. My research on detecting autism from gaze patterns is published at IEEE OTCON-2025.",
   location: "Pune, India",
   availability:
-    "Graduating June 2026. Open to full-stack, backend, and AI engineering roles.",
+    "B.Tech complete, June 2026. Available immediately for full-stack, backend, and AI engineering roles.",
   email: "rushabhrode@gmail.com",
   phone: "+91 99217 18988",
   url: "https://rushabhrode.me",
